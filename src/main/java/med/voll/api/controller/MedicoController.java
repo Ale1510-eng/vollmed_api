@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
@@ -20,27 +22,33 @@ public class MedicoController {
 
     @Transactional
     @PostMapping
-    public void registrar(@RequestBody @Valid DatosRegistroMedico datos){
-        repository.save(new Medico(datos));
+    public ResponseEntity registrar(@RequestBody @Valid DatosRegistroMedico datos, UriComponentsBuilder uriComponentsBuilder){
+        var medico = new Medico(datos);
+        repository.save(medico);
+        var uri = uriComponentsBuilder.path("/medicos/{id}").buildAndExpand(medico.getId()).toUri();
+        return ResponseEntity.created(uri).body(new DatosDetalleMedico(medico));
     }
 
     @GetMapping
-    public Page<DatosListaMedico> listar(@PageableDefault(size=10, sort ={"nombre"} ) Pageable paginacion){
-       return repository.findAllByActivoTrue(paginacion)
+    public ResponseEntity<Page<DatosListaMedico>> listar(@PageableDefault(size=10, sort ={"nombre"} ) Pageable paginacion){
+       var Page = repository.findAllByActivoTrue(paginacion)
                .map(DatosListaMedico::new);
+       return ResponseEntity.ok(Page);
     }
 
     @Transactional
     @PutMapping
-    public void actualizar(@RequestBody @Valid DatosActualizacionMedico datos){
+    public ResponseEntity actualizar(@RequestBody @Valid DatosActualizacionMedico datos){
         var medico = repository.getReferenceById(datos.id());
         medico.actualizarInformacion(datos);
+        return ResponseEntity.ok(new DatosDetalleMedico(medico));
     }
 
     @Transactional
     @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable Long id){
+    public ResponseEntity eliminar(@PathVariable Long id){
         var medico = repository.getReferenceById(id);
         medico.eliminar();
+        return ResponseEntity.noContent().build();
     }
 }
