@@ -1,0 +1,14 @@
+CREATE TABLE pacientes (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  telefono VARCHAR(20) NOT NULL,
+  documento_identidad VARCHAR(10) NOT NULL UNIQUE,
+  calle VARCHAR(100) NOT NULL,
+  numero VARCHAR(20),
+  complemento VARCHAR(100),
+  barrio VARCHAR(100) NOT NULL,
+  ciudad VARCHAR(100) NOT NULL,
+  codigo_postal VARCHAR(10) NOT NULL,
+  estado VARCHAR(100) NOT NULL
+);
