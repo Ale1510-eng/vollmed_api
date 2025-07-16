@@ -26,7 +26,8 @@ private SecurityFilter securityFilter;
         return http.csrf(csrf ->csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(rq -> {
-                    rq.requestMatchers(HttpMethod.POST, "/login").permitAll();
+                    rq.requestMatchers(HttpMethod.POST, "/login").permitAll()
+                            .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll();
                     /*rq.requestMatchers(HttpMethod.DELETE, "/medicos").hasRole("ADMIN");
                     rq.requestMatchers(HttpMethod.DELETE, "/pacientes").hasRole("ADMIN");*/
                     rq.anyRequest().authenticated();
